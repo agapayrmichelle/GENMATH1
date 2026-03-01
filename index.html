@@ -459,6 +459,8 @@ reader.readAsText(file);
 
 <script>
 
+<script>
+
 // =============================
 // MULTIPLE CHOICE QUIZ
 // =============================
@@ -647,10 +649,10 @@ feedback.innerHTML="❌ Incorrect. Correct word is "+scrambleWord;
 
 }
 
-<script>
+
 
 // =============================
-// RANDOM MULTIPLE CHOICE FIX
+// RANDOM MULTIPLE CHOICE
 // =============================
 
 let mcqAnswer = -1;
@@ -661,74 +663,68 @@ function generateMCQProblem(){
 const questions = [
 
 {
-question:"What is the formula for Net Pay?",
+q:"What is the formula for Net Pay?",
 options:[
 "Net Pay = Gross Income – Taxes/Deductions",
 "Net Pay = Daily Wage × Days",
 "Net Pay = Commission × Sales"
 ],
-correct:0
+a:0
 },
 
 {
-question:"Which payment is fixed monthly?",
+q:"Which payment is fixed monthly?",
 options:[
 "Wages",
 "Salary",
 "Commission"
 ],
-correct:1
+a:1
 },
 
 {
-question:"Commission is based on:",
+q:"Commission is based on:",
 options:[
 "Hours worked",
 "Sales made",
 "Monthly contract"
 ],
-correct:1
+a:1
 }
 
 ];
 
 const q = questions[Math.floor(Math.random()*questions.length)];
 
-mcqAnswer = q.correct;
+mcqAnswer = q.a;
 mcqSelected = -1;
 
 const container = document.getElementById("mcqContainer");
 
-container.innerHTML = "";
+container.innerHTML="<p>"+q.q+"</p>";
 
-// show question
-const question = document.createElement("p");
-question.textContent = q.question;
-container.appendChild(question);
+q.options.forEach((opt,i)=>{
 
-// create options
-q.options.forEach((opt,index)=>{
+const btn = document.createElement("button");
 
-const label = document.createElement("label");
-label.style.display="block";
+btn.innerHTML = opt;
 
-const radio = document.createElement("input");
-radio.type="radio";
-radio.name="mcqOption";
-radio.value=index;
+btn.style.margin="5px";
 
-radio.onclick=function(){
-mcqSelected = index;
+btn.onclick=function(){
+
+mcqSelected=i;
+
 };
 
-label.appendChild(radio);
-label.appendChild(document.createTextNode(" "+opt));
+container.appendChild(btn);
 
-container.appendChild(label);
+container.appendChild(document.createElement("br"));
 
 });
 
 }
+
 
 function checkMCQAnswer(){
 
@@ -736,16 +732,17 @@ const feedback = document.getElementById("feedbackMCQ");
 
 feedback.style.display="block";
 
-if(mcqSelected === mcqAnswer){
+if(mcqSelected===mcqAnswer){
 feedback.style.background="#ccffcc";
 feedback.innerHTML="✅ Correct!";
-}
-else{
+}else{
 feedback.style.background="#ffcccc";
-feedback.innerHTML="❌ Incorrect. Try again.";
+feedback.innerHTML="❌ Incorrect.";
 }
 
 }
+
+</script>
 
 
 </script>
