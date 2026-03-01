@@ -457,182 +457,287 @@ reader.readAsText(file);
 </script>
   <script>
 
+<script>
+
+// =============================
 // MULTIPLE CHOICE QUIZ
+// =============================
 function checkMCQ(selectId, feedbackId){
-let value = document.getElementById(selectId).value;
-let feedback = document.getElementById(feedbackId);
+const value = document.getElementById(selectId).value;
+const feedback = document.getElementById(feedbackId);
+
 feedback.style.display="block";
 
 if(value==="correct"){
-feedback.style.backgroundColor="#ccffcc";
-feedback.textContent="✅ Correct!";
+feedback.style.background="#ccffcc";
+feedback.innerHTML="✅ Correct!";
 }else{
-feedback.style.backgroundColor="#ffcccc";
-feedback.textContent="❌ Try again.";
+feedback.style.background="#ffcccc";
+feedback.innerHTML="❌ Incorrect. Try again.";
 }
 }
 
 
-// DRAG DROP (SELECT MATCH)
+// =============================
+// DRAG MATCH
+// =============================
 function checkDragDrop(){
-let d1 = document.getElementById("drop1").value;
-let d2 = document.getElementById("drop2").value;
-let d3 = document.getElementById("drop3").value;
 
-let feedback = document.getElementById("feedback9");
+const d1 = document.getElementById("drop1").value;
+const d2 = document.getElementById("drop2").value;
+const d3 = document.getElementById("drop3").value;
+
+const feedback = document.getElementById("feedback9");
 feedback.style.display="block";
 
 if(d1==="Salary" && d2==="Wages" && d3==="Commission"){
-feedback.style.backgroundColor="#ccffcc";
-feedback.textContent="✅ Correct matching!";
+feedback.style.background="#ccffcc";
+feedback.innerHTML="✅ Correct!";
 }else{
-feedback.style.backgroundColor="#ffcccc";
-feedback.textContent="❌ Some answers are incorrect.";
+feedback.style.background="#ffcccc";
+feedback.innerHTML="❌ Some answers are incorrect.";
 }
+
 }
 
 
-// RANDOM SALARY PROBLEM
-let correctRandomAnswer = 0;
+// =============================
+// RANDOM SALARY CHALLENGE
+// =============================
+
+let randomAnswerValue = 0;
 
 function randomProblem(){
-let wage = Math.floor(Math.random()*200)+300;
-let days = Math.floor(Math.random()*5)+1;
 
-correctRandomAnswer = wage * days;
+const wage = Math.floor(Math.random()*400)+200;
+const days = Math.floor(Math.random()*6)+1;
 
-let problem = `A worker earns ₱${wage} per day and worked ${days} days. 
-How much did the worker earn?`;
+randomAnswerValue = wage * days;
 
-let container = document.getElementById("randomProblem");
+const container = document.getElementById("randomProblem");
+
 container.style.display="block";
-container.textContent = problem;
+container.innerHTML =
+"A worker earns ₱"+wage+" per day and worked "+days+" days.<br><br>How much did the worker earn?";
 
 document.getElementById("feedback10").style.display="none";
+
 }
 
+
 function checkRandomAnswer(){
-let answer = document.getElementById("randomAnswer").value;
-let feedback = document.getElementById("feedback10");
+
+const userAnswer = document.getElementById("randomAnswer").value;
+const feedback = document.getElementById("feedback10");
 
 feedback.style.display="block";
 
-if(parseFloat(answer) === correctRandomAnswer){
-feedback.style.backgroundColor="#ccffcc";
-feedback.textContent="✅ Correct!";
+if(Number(userAnswer)===randomAnswerValue){
+feedback.style.background="#ccffcc";
+feedback.innerHTML="✅ Correct!";
 }else{
-feedback.style.backgroundColor="#ffcccc";
-feedback.textContent=`❌ Incorrect. Correct answer is ₱${correctRandomAnswer}`;
+feedback.style.background="#ffcccc";
+feedback.innerHTML="❌ Incorrect. Correct answer is ₱"+randomAnswerValue;
 }
+
 }
 
 
-// SCRAMBLED LETTERS
+
+// =============================
+// SCRAMBLED LETTER GAME
+// =============================
+
 let scrambleWord = "";
-let selectedLetters = [];
+let scrambleLetters = [];
+let userLetters = [];
 
 function generateScrambleProblem(){
+
 const words = ["SALARY","WAGES","COMMISSION","GROSS","NET"];
+
 scrambleWord = words[Math.floor(Math.random()*words.length)];
 
-let letters = scrambleWord.split("").sort(()=>Math.random()-0.5);
+scrambleLetters = scrambleWord.split("");
 
-let container = document.getElementById("scrambleContainer");
+scrambleLetters.sort(()=>Math.random()-0.5);
+
+userLetters = [];
+
+const container = document.getElementById("scrambleContainer");
+
 container.innerHTML="";
 
-letters.forEach(letter=>{
-let span = document.createElement("span");
-span.textContent = letter;
-span.className="letter";
-span.onclick=function(){
-selectedLetters.push(letter);
-renderSlots();
+const lettersDiv = document.createElement("div");
+
+scrambleLetters.forEach(letter=>{
+
+const btn = document.createElement("span");
+btn.className="letter";
+btn.innerHTML=letter;
+
+btn.onclick=function(){
+
+userLetters.push(letter);
+renderScrambleSlots();
+
 };
-container.appendChild(span);
+
+lettersDiv.appendChild(btn);
+
 });
 
-let slots = document.createElement("div");
-slots.id="scrambleSlots";
-slots.style.marginTop="10px";
-container.appendChild(slots);
+container.appendChild(lettersDiv);
 
-selectedLetters=[];
-renderSlots();
+const slotDiv = document.createElement("div");
+slotDiv.id="scrambleSlots";
+slotDiv.style.marginTop="10px";
+
+container.appendChild(slotDiv);
+
+renderScrambleSlots();
+
 }
 
-function renderSlots(){
-let slots=document.getElementById("scrambleSlots");
+
+
+function renderScrambleSlots(){
+
+const slots = document.getElementById("scrambleSlots");
+
+if(!slots) return;
+
 slots.innerHTML="";
 
-selectedLetters.forEach((l,i)=>{
-let s=document.createElement("span");
+userLetters.forEach((letter,index)=>{
+
+const s = document.createElement("span");
 s.className="dropzone";
-s.textContent=l;
+s.innerHTML=letter;
+
 s.onclick=function(){
-selectedLetters.splice(i,1);
-renderSlots();
+
+userLetters.splice(index,1);
+renderScrambleSlots();
+
 };
+
 slots.appendChild(s);
+
 });
+
 }
 
+
 function checkScrambleAnswer(){
-let answer = selectedLetters.join("");
-let feedback = document.getElementById("feedbackScramble");
+
+const answer = userLetters.join("");
+
+const feedback = document.getElementById("feedbackScramble");
+
 feedback.style.display="block";
 
 if(answer===scrambleWord){
-feedback.style.backgroundColor="#ccffcc";
-feedback.textContent="✅ Correct!";
+feedback.style.background="#ccffcc";
+feedback.innerHTML="✅ Correct!";
 }else{
-feedback.style.backgroundColor="#ffcccc";
-feedback.textContent=`❌ Try again. Word is ${scrambleWord}`;
+feedback.style.background="#ffcccc";
+feedback.innerHTML="❌ Incorrect. Correct word is "+scrambleWord;
 }
+
 }
 
 
-// RANDOM MCQ
-let currentMCQAnswer="";
+
+// =============================
+// RANDOM MULTIPLE CHOICE
+// =============================
+
+let mcqAnswer = -1;
+let mcqSelected = -1;
 
 function generateMCQProblem(){
 
-let q = {
-question:"What is the formula for Gross Income?",
+const questions = [
+
+{
+q:"What is the formula for Net Pay?",
 options:[
-"Gross Income = Salary + Wages + Commission",
-"Gross Income = Net Pay - Tax",
-"Gross Income = Daily Wage × 365"
+"Net Pay = Gross Income – Taxes/Deductions",
+"Net Pay = Daily Wage × Days",
+"Net Pay = Commission × Sales"
 ],
-answer:0
-};
+a:0
+},
 
-currentMCQAnswer=q.answer;
+{
+q:"Which payment is fixed monthly?",
+options:[
+"Wages",
+"Salary",
+"Commission"
+],
+a:1
+},
 
-let container=document.getElementById("mcqContainer");
-container.innerHTML=`<p>${q.question}</p>`;
+{
+q:"Commission is based on:",
+options:[
+"Hours worked",
+"Sales made",
+"Monthly contract"
+],
+a:1
+}
+
+];
+
+const q = questions[Math.floor(Math.random()*questions.length)];
+
+mcqAnswer = q.a;
+mcqSelected = -1;
+
+const container = document.getElementById("mcqContainer");
+
+container.innerHTML="<p>"+q.q+"</p>";
 
 q.options.forEach((opt,i)=>{
-let btn=document.createElement("button");
-btn.textContent=opt;
-btn.onclick=function(){ currentMCQAnswerSelected=i; };
+
+const btn = document.createElement("button");
+
+btn.innerHTML = opt;
+
+btn.style.margin="5px";
+
+btn.onclick=function(){
+
+mcqSelected=i;
+
+};
+
 container.appendChild(btn);
+
 container.appendChild(document.createElement("br"));
+
 });
+
 }
 
-let currentMCQAnswerSelected=-1;
 
 function checkMCQAnswer(){
-let feedback=document.getElementById("feedbackMCQ");
+
+const feedback = document.getElementById("feedbackMCQ");
+
 feedback.style.display="block";
 
-if(currentMCQAnswerSelected===currentMCQAnswer){
-feedback.style.backgroundColor="#ccffcc";
-feedback.textContent="✅ Correct!";
+if(mcqSelected===mcqAnswer){
+feedback.style.background="#ccffcc";
+feedback.innerHTML="✅ Correct!";
 }else{
-feedback.style.backgroundColor="#ffcccc";
-feedback.textContent="❌ Try again.";
+feedback.style.background="#ffcccc";
+feedback.innerHTML="❌ Incorrect.";
 }
+
 }
 
 </script>
