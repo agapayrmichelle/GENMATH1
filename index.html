@@ -647,10 +647,10 @@ feedback.innerHTML="❌ Incorrect. Correct word is "+scrambleWord;
 
 }
 
-
+<script>
 
 // =============================
-// RANDOM MULTIPLE CHOICE
+// RANDOM MULTIPLE CHOICE FIX
 // =============================
 
 let mcqAnswer = -1;
@@ -661,68 +661,74 @@ function generateMCQProblem(){
 const questions = [
 
 {
-q:"What is the formula for Net Pay?",
+question:"What is the formula for Net Pay?",
 options:[
 "Net Pay = Gross Income – Taxes/Deductions",
 "Net Pay = Daily Wage × Days",
 "Net Pay = Commission × Sales"
 ],
-a:0
+correct:0
 },
 
 {
-q:"Which payment is fixed monthly?",
+question:"Which payment is fixed monthly?",
 options:[
 "Wages",
 "Salary",
 "Commission"
 ],
-a:1
+correct:1
 },
 
 {
-q:"Commission is based on:",
+question:"Commission is based on:",
 options:[
 "Hours worked",
 "Sales made",
 "Monthly contract"
 ],
-a:1
+correct:1
 }
 
 ];
 
 const q = questions[Math.floor(Math.random()*questions.length)];
 
-mcqAnswer = q.a;
+mcqAnswer = q.correct;
 mcqSelected = -1;
 
 const container = document.getElementById("mcqContainer");
 
-container.innerHTML="<p>"+q.q+"</p>";
+container.innerHTML = "";
 
-q.options.forEach((opt,i)=>{
+// show question
+const question = document.createElement("p");
+question.textContent = q.question;
+container.appendChild(question);
 
-const btn = document.createElement("button");
+// create options
+q.options.forEach((opt,index)=>{
 
-btn.innerHTML = opt;
+const label = document.createElement("label");
+label.style.display="block";
 
-btn.style.margin="5px";
+const radio = document.createElement("input");
+radio.type="radio";
+radio.name="mcqOption";
+radio.value=index;
 
-btn.onclick=function(){
-
-mcqSelected=i;
-
+radio.onclick=function(){
+mcqSelected = index;
 };
 
-container.appendChild(btn);
+label.appendChild(radio);
+label.appendChild(document.createTextNode(" "+opt));
 
-container.appendChild(document.createElement("br"));
+container.appendChild(label);
 
 });
 
 }
-
 
 function checkMCQAnswer(){
 
@@ -730,15 +736,17 @@ const feedback = document.getElementById("feedbackMCQ");
 
 feedback.style.display="block";
 
-if(mcqSelected===mcqAnswer){
+if(mcqSelected === mcqAnswer){
 feedback.style.background="#ccffcc";
 feedback.innerHTML="✅ Correct!";
-}else{
+}
+else{
 feedback.style.background="#ffcccc";
-feedback.innerHTML="❌ Incorrect.";
+feedback.innerHTML="❌ Incorrect. Try again.";
 }
 
 }
+
 
 </script>
 </body>
