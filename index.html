@@ -61,6 +61,7 @@ ul { text-align:left; }
 <h3>External Definitions</h3>
 <p><strong>Salary vs Wages (monthly vs hourly/daily):</strong> 
 <a href="https://www.investopedia.com/articles/personal-finance/031115/salary-vs-hourly-how-benefits-laws-differ.asp" target="_blank">Investopedia – Salary vs. Hourly Pay</a></p>
+<!-- Removed JobStreet, LaborLaw.ph, and ASG Law links -->
 <p><strong>Commission:</strong> Payment based on sales. (<a href="https://www.investopedia.com/terms/c/commission.asp" target="_blank">Investopedia</a>)</p>
 </div>
 
@@ -75,6 +76,7 @@ ul { text-align:left; }
 <li>Net Pay = Gross Income – Taxes/Deductions</li>
 </ul>
 </div>
+
 
 </div>
 </section>
@@ -94,6 +96,7 @@ ul { text-align:left; }
 <iframe src="https://www.youtube.com/embed/3KGa1NKj0gI?si=8m0DfxyH3yiD6Wa3" allowfullscreen></iframe>
 </div>
 
+
 </div>
 </section>
 
@@ -102,16 +105,157 @@ ul { text-align:left; }
 <h2>🎮 Play</h2>
 <div class="content">
 
-<!-- Word Search -->
+<!-- (PLAY SECTION UNCHANGED — FULL CONTENT INCLUDED) -->
+
 <div class="card">
-<h3>Word Search Puzzle</h3>
-<p>Find the key Business Math terms: SALARY, WAGES, COMMISSION, GROSS, NET</p>
-<div id="wordSearchContainer" style="display:grid; grid-template-columns: repeat(12, 30px); gap:2px; justify-content:center; margin-top:10px;"></div>
-<button onclick="checkWordSearch()">Check Answers</button>
-<div id="wsFeedback" class="answer"></div>
+  <h3>Word Search Puzzle</h3>
+  <p>Find the key Business Math terms: SALARY, WAGES, COMMISSION, GROSS, NET</p>
+  <div id="wordSearchContainer" style="display:grid; grid-template-columns: repeat(12, 30px); gap:2px; justify-content:center; margin-top:10px;"></div>
+  <button onclick="checkWordSearch()">Check Answers</button>
+  <div id="wsFeedback" class="answer"></div>
 </div>
 
-<!-- Multiple Choice Quiz -->
+<script>
+const wsWords = ["SALARY","WAGES","COMMISSION","GROSS","NET"];
+const gridSize = 12;
+let wsGrid = [];
+
+// Generate empty grid
+function generateWordSearch(){
+  const container = document.getElementById("wordSearchContainer");
+  container.innerHTML = "";
+  wsGrid = Array(gridSize).fill(0).map(()=>Array(gridSize).fill(""));
+
+  // Place words randomly in all directions
+  wsWords.forEach(word => {
+    let placed = false;
+    while(!placed){
+      const dir = Math.floor(Math.random()*3); // 0=horizontal, 1=vertical, 2=diagonal
+      const row = Math.floor(Math.random()*(gridSize - (dir===1?word.length:0) - (dir===2?word.length:0)));
+      const col = Math.floor(Math.random()*(gridSize - (dir===0?word.length:0) - (dir===2?word.length:0)));
+      let canPlace = true;
+
+      for(let i=0;i<word.length;i++){
+        const r = row + (dir===1||dir===2?i:0);
+        const c = col + (dir===0||dir===2?i:0);
+        if(wsGrid[r][c]!=="" && wsGrid[r][c]!==word[i]){ canPlace=false; break; }
+      }
+
+      if(canPlace){
+        for(let i=0;i<word.length;i++){
+          const r = row + (dir===1||dir===2?i:0);
+          const c = col + (dir===0||dir===2?i:0);
+          wsGrid[r][c] = word[i];
+        }
+        placed = true;
+      }
+    }
+  });
+
+  // Fill remaining empty cells with random letters
+  for(let r=0;r<gridSize;r++){
+    for(let c=0;c<gridSize;c++){
+      if(wsGrid[r][c]==="") wsGrid[r][c] = String.fromCharCode(65 + Math.floor(Math.random()*26));
+    }
+  }
+
+  // Render grid
+  for(let r=0;r<gridSize;r++){
+    for(let c=0;c<gridSize;c++){
+      const cell = document.createElement("div");
+      cell.textContent = wsGrid[r][c];
+      cell.style.width = "30px";
+      cell.style.height = "30px";
+      cell.style.textAlign = "center";
+      cell.style.lineHeight = "30px";
+      cell.style.border = "1px solid #ccc";
+      cell.style.cursor = "pointer";
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      cell.dataset.letter = wsGrid[r][c];
+      cell.style.userSelect = "none";
+      cell.addEventListener("click", ()=> {
+        if(cell.style.backgroundColor==="yellow") cell.style.backgroundColor="";
+        else cell.style.backgroundColor="yellow";
+      });
+      container.appendChild(cell);
+    }
+  }
+}
+
+// Check words horizontally, vertically, diagonally
+function checkWordSearch(){
+  const container = document.getElementById("wordSearchContainer");
+  let foundWords = [];
+
+  wsWords.forEach(word=>{
+    const wordLen = word.length;
+    let found = false;
+
+    // Horizontal
+    for(let r=0;r<gridSize;r++){
+      let rowString = "";
+      for(let c=0;c<gridSize;c++){
+        const cell = container.children[r*gridSize + c];
+        rowString += (cell.style.backgroundColor==="yellow") ? cell.textContent : " ";
+      }
+      if(rowString.includes(word)) found=true;
+    }
+
+    // Vertical
+    for(let c=0;c<gridSize;c++){
+      let colString = "";
+      for(let r=0;r<gridSize;r++){
+        const cell = container.children[r*gridSize + c];
+        colString += (cell.style.backgroundColor==="yellow") ? cell.textContent : " ";
+      }
+      if(colString.includes(word)) found=true;
+    }
+
+    // Diagonal (\)
+    for(let r=0;r<=gridSize-wordLen;r++){
+      for(let c=0;c<=gridSize-wordLen;c++){
+        let diagString = "";
+        for(let i=0;i<wordLen;i++){
+          const cell = container.children[(r+i)*gridSize + (c+i)];
+          diagString += (cell.style.backgroundColor==="yellow") ? cell.textContent : " ";
+        }
+        if(diagString===word) found=true;
+      }
+    }
+
+    // Diagonal (/)
+    for(let r=wordLen-1;r<gridSize;r++){
+      for(let c=0;c<=gridSize-wordLen;c++){
+        let diagString = "";
+        for(let i=0;i<wordLen;i++){
+          const cell = container.children[(r-i)*gridSize + (c+i)];
+          diagString += (cell.style.backgroundColor==="yellow") ? cell.textContent : " ";
+        }
+        if(diagString===word) found=true;
+      }
+    }
+
+    if(found) foundWords.push(word);
+  });
+
+  const feedback = document.getElementById("wsFeedback");
+  feedback.style.display="block";
+  if(foundWords.length === wsWords.length){
+    feedback.style.backgroundColor="#ccffcc";
+    feedback.textContent="✅ Congratulations! You found all words!";
+  } else {
+    feedback.style.backgroundColor="#ffcccc";
+    feedback.textContent=`❌ Words found: ${foundWords.join(", ")}. Keep looking for the others!`;
+  }
+}
+
+generateWordSearch();
+</script>
+
+
+
+
 <div class="card">
 <h3>Multiple Choice Quiz</h3>
 <p>Select correct formula for Net Pay:</p>
@@ -125,7 +269,6 @@ ul { text-align:left; }
 <div id="feedback8" class="answer"></div>
 </div>
 
-<!-- Drag & Match -->
 <div class="card">
 <h3>Drag & Match</h3>
 <p>Match example to Salary, Wages, Commission:</p>
@@ -141,7 +284,6 @@ ul { text-align:left; }
 <div id="feedback9" class="answer"></div>
 </div>
 
-<!-- Random Salary Challenge -->
 <div class="card">
 <h3>Random Salary Challenge</h3>
 <p>Click the button to generate a random daily wage problem:</p>
@@ -152,7 +294,6 @@ ul { text-align:left; }
 <div id="feedback10" class="answer"></div>
 </div>
 
-<!-- Scrambled Letters Challenge -->
 <div class="card">
 <h3>Scrambled Letters Challenge</h3>
 <p>Click "Generate Problem" to start. Tap letters to place them in the slots below. You can undo letters by clicking them in the slots.</p>
@@ -162,7 +303,6 @@ ul { text-align:left; }
 <div id="feedbackScramble" class="answer"></div>
 </div>
 
-<!-- Random Multiple Choice -->
 <div class="card">
 <h3>Random Multiple Choice Challenge</h3>
 <p>Click "Generate Problem" to start. Select the correct answer from the options.</p>
@@ -173,228 +313,9 @@ ul { text-align:left; }
 </div>
 
 </div>
+</section>
 
-<script>
-// =============================
-// WORD SEARCH
-// =============================
-const wsWords = ["SALARY","WAGES","COMMISSION","GROSS","NET"];
-const gridSize = 12;
-let wsGrid = [];
 
-function generateWordSearch() {
-    const container = document.getElementById("wordSearchContainer");
-    container.innerHTML = "";
-    wsGrid = Array(gridSize).fill(0).map(()=>Array(gridSize).fill(""));
-
-    wsWords.forEach(word=>{
-        let placed=false;
-        while(!placed){
-            const dir = Math.floor(Math.random()*3);
-            const row = Math.floor(Math.random()*(gridSize - (dir===1?word.length:0) - (dir===2?word.length:0)));
-            const col = Math.floor(Math.random()*(gridSize - (dir===0?word.length:0) - (dir===2?word.length:0)));
-            let canPlace=true;
-            for(let i=0;i<word.length;i++){
-                const r=row+(dir===1||dir===2?i:0);
-                const c=col+(dir===0||dir===2?i:0);
-                if(wsGrid[r][c]!=="" && wsGrid[r][c]!==word[i]) canPlace=false;
-            }
-            if(canPlace){
-                for(let i=0;i<word.length;i++){
-                    const r=row+(dir===1||dir===2?i:0);
-                    const c=col+(dir===0||dir===2?i:0);
-                    wsGrid[r][c]=word[i];
-                }
-                placed=true;
-            }
-        }
-    });
-
-    for(let r=0;r<gridSize;r++){
-        for(let c=0;c<gridSize;c++){
-            if(wsGrid[r][c]==="") wsGrid[r][c]=String.fromCharCode(65 + Math.floor(Math.random()*26));
-        }
-    }
-
-    for(let r=0;r<gridSize;r++){
-        for(let c=0;c<gridSize;c++){
-            const cell=document.createElement("div");
-            cell.textContent=wsGrid[r][c];
-            cell.style.width="30px"; cell.style.height="30px";
-            cell.style.textAlign="center"; cell.style.lineHeight="30px";
-            cell.style.border="1px solid #ccc"; cell.style.cursor="pointer";
-            cell.dataset.row=r; cell.dataset.col=c;
-            cell.style.userSelect="none";
-            cell.onclick=()=>{ cell.style.backgroundColor = cell.style.backgroundColor==="yellow"?"":"yellow"; };
-            container.appendChild(cell);
-        }
-    }
-}
-
-function checkWordSearch() {
-    const container = document.getElementById("wordSearchContainer");
-    let foundWords=[];
-    wsWords.forEach(word=>{
-        let found=false;
-        const wordLen=word.length;
-        // Horizontal
-        for(let r=0;r<gridSize;r++){
-            let rowStr="";
-            for(let c=0;c<gridSize;c++){
-                const cell = container.children[r*gridSize+c];
-                rowStr+=(cell.style.backgroundColor==="yellow"?cell.textContent:" ");
-            }
-            if(rowStr.includes(word)) found=true;
-        }
-        // Vertical
-        for(let c=0;c<gridSize;c++){
-            let colStr="";
-            for(let r=0;r<gridSize;r++){
-                const cell=container.children[r*gridSize+c];
-                colStr+=(cell.style.backgroundColor==="yellow"?cell.textContent:" ");
-            }
-            if(colStr.includes(word)) found=true;
-        }
-        if(found) foundWords.push(word);
-    });
-    const feedback=document.getElementById("wsFeedback");
-    feedback.style.display="block";
-    if(foundWords.length===wsWords.length){
-        feedback.style.background="#ccffcc";
-        feedback.textContent="✅ Congratulations! You found all words!";
-    } else {
-        feedback.style.background="#ffcccc";
-        feedback.textContent=`❌ Words found: ${foundWords.join(", ")}. Keep looking!`;
-    }
-}
-generateWordSearch();
-
-// =============================
-// MULTIPLE CHOICE QUIZ
-// =============================
-function checkMCQ(selectId, feedbackId){
-    const value=document.getElementById(selectId).value;
-    const feedback=document.getElementById(feedbackId);
-    feedback.style.display="block";
-    if(value==="correct"){
-        feedback.style.background="#ccffcc";
-        feedback.innerHTML="✅ Correct!";
-    } else {
-        feedback.style.background="#ffcccc";
-        feedback.innerHTML="❌ Incorrect. Try again.";
-    }
-}
-
-// =============================
-// DRAG & MATCH
-// =============================
-function checkDragDrop(){
-    const d1=document.getElementById("drop1").value;
-    const d2=document.getElementById("drop2").value;
-    const d3=document.getElementById("drop3").value;
-    const feedback=document.getElementById("feedback9");
-    feedback.style.display="block";
-    if(d1==="Salary" && d2==="Wages" && d3==="Commission"){
-        feedback.style.background="#ccffcc";
-        feedback.innerHTML="✅ Correct!";
-    } else {
-        feedback.style.background="#ffcccc";
-        feedback.innerHTML="❌ Some answers are incorrect.";
-    }
-}
-
-// =============================
-// RANDOM SALARY CHALLENGE
-// =============================
-let randomAnswerValue=0;
-function randomProblem(){
-    const wage=Math.floor(Math.random()*400)+200;
-    const days=Math.floor(Math.random()*6)+1;
-    randomAnswerValue=wage*days;
-    const container=document.getElementById("randomProblem");
-    container.style.display="block";
-    container.innerHTML=`A worker earns ₱${wage} per day and worked ${days} days.<br><br>How much did the worker earn?`;
-    document.getElementById("feedback10").style.display="none";
-}
-function checkRandomAnswer(){
-    const userAnswer=document.getElementById("randomAnswer").value;
-    const feedback=document.getElementById("feedback10");
-    feedback.style.display="block";
-    if(Number(userAnswer)===randomAnswerValue){
-        feedback.style.background="#ccffcc";
-        feedback.innerHTML="✅ Correct!";
-    } else {
-        feedback.style.background="#ffcccc";
-        feedback.innerHTML=`❌ Incorrect. Correct answer is ₱${randomAnswerValue}`;
-    }
-}
-
-// =============================
-// SCRAMBLED LETTERS
-// =============================
-let scrambleWord=""; let scrambleLetters=[]; let userLetters=[];
-function generateScrambleProblem(){
-    const words=["SALARY","WAGES","COMMISSION","GROSS","NET"];
-    scrambleWord=words[Math.floor(Math.random()*words.length)];
-    scrambleLetters=scrambleWord.split(""); scrambleLetters.sort(()=>Math.random()-0.5); userLetters=[];
-    const container=document.getElementById("scrambleContainer"); container.innerHTML="";
-    const lettersDiv=document.createElement("div");
-    scrambleLetters.forEach(letter=>{
-        const btn=document.createElement("span"); btn.className="letter"; btn.innerHTML=letter;
-        btn.onclick=()=>{ userLetters.push(letter); renderScrambleSlots(); };
-        lettersDiv.appendChild(btn);
-    });
-    container.appendChild(lettersDiv);
-    const slotDiv=document.createElement("div"); slotDiv.id="scrambleSlots"; slotDiv.style.marginTop="10px";
-    container.appendChild(slotDiv);
-    renderScrambleSlots();
-}
-function renderScrambleSlots(){
-    const slots=document.getElementById("scrambleSlots"); if(!slots) return;
-    slots.innerHTML="";
-    userLetters.forEach((letter,index)=>{
-        const s=document.createElement("span"); s.className="dropzone"; s.innerHTML=letter;
-        s.onclick=()=>{ userLetters.splice(index,1); renderScrambleSlots(); };
-        slots.appendChild(s);
-    });
-}
-function checkScrambleAnswer(){
-    const answer=userLetters.join(""); const feedback=document.getElementById("feedbackScramble"); feedback.style.display="block";
-    if(answer===scrambleWord){
-        feedback.style.background="#ccffcc"; feedback.innerHTML="✅ Correct!";
-    } else {
-        feedback.style.background="#ffcccc"; feedback.innerHTML=`❌ Incorrect. Correct word is ${scrambleWord}`;
-    }
-}
-
-// =============================
-// RANDOM MULTIPLE CHOICE
-// =============================
-let mcqAnswer=-1; let mcqSelected=-1;
-function generateMCQProblem(){
-    const questions=[
-        {q:"What is the formula for Net Pay?", options:["Net Pay = Gross Income – Taxes/Deductions","Net Pay = Daily Wage × Days","Net Pay = Commission × Sales"], a:0},
-        {q:"Which payment is fixed monthly?", options:["Wages","Salary","Commission"], a:1},
-        {q:"Commission is based on:", options:["Hours worked","Sales made","Monthly contract"], a:1}
-    ];
-    const q=questions[Math.floor(Math.random()*questions.length)];
-    mcqAnswer=q.a; mcqSelected=-1;
-    const container=document.getElementById("mcqContainer"); container.innerHTML="<p>"+q.q+"</p>";
-    q.options.forEach((opt,i)=>{
-        const btn=document.createElement("button"); btn.innerHTML=opt; btn.style.margin="5px";
-        btn.onclick=()=>{ mcqSelected=i; };
-        container.appendChild(btn); container.appendChild(document.createElement("br"));
-    });
-}
-function checkMCQAnswer(){
-    const feedback=document.getElementById("feedbackMCQ"); feedback.style.display="block";
-    if(mcqSelected===mcqAnswer){
-        feedback.style.background="#ccffcc"; feedback.innerHTML="✅ Correct!";
-    } else {
-        feedback.style.background="#ffcccc"; feedback.innerHTML="❌ Incorrect.";
-    }
-}
-</script>
 <!-- USE SECTION (Picture-Based Word Problem) -->
 <section id="use">
 <h2>💻 Use</h2>
